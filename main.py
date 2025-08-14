@@ -34,6 +34,7 @@ import asyncio
 import json
 import logging
 import websockets
+import subprocess
 from datetime import datetime
 
 # Configure logging
@@ -71,14 +72,22 @@ class SimpleWebSocketServer:
                 pack_name = args.get('name', 'Unknown Pack')
                 pack_url = args.get('url', '')
                 pack_size = args.get('size', 'unknown')
-                
+                # TODO: Run on Ubuntu 20.04 LTS WITH Java2Bedrock W/ Args, Note to brebs dumbass, YOU CANT RUN IT ON WINDOWS
+                # Run test .bat TODO: Run actual shell script!
+                pack_output = subprocess.run(['converttest.bat', ''], stdout=subprocess.PIPE)
+                # Why the fuck does it output a byte?
+                pack_output_string = pack_output.stdout.decode('utf-8')
+                # Give the client the info of the pack TODO: Actually handle file downloads!
                 return {
                     'command': 'pack',
-                    'status': 'conversion',
+                    'status': 'converting',
                     'message': f'Pack "{pack_name}" received!',
                     'client_id': client_id,
-                    'timestamp': datetime.now().isoformat()
+                    'timestamp': datetime.now().isoformat(),
+                    'testout' : pack_output_string
                 }
+                # TODO: Add method for notification of pack conversion completion
+                # TODO: Finish plugin side
             elif command == 'echo':
                 text = args.get('text', 'No text provided')
                 return {
